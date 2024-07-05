@@ -1,0 +1,14 @@
+#ifndef PARADOX_SOFTWARE_C_DESKTOP_DEFINES_H
+#define PARADOX_SOFTWARE_C_DESKTOP_DEFINES_H
+
+#include <paradox-application/defines.h>
+
+#ifdef PARADOX_DESKTOP_STATIC
+    #define PARADOX_DESKTOP_API
+#elif PARADOX_DESKTOP_BUILD_DLL
+    #define PARADOX_DESKTOP_API PARADOX_EXPORT
+#else
+    #define PARADOX_DESKTOP_API PARADOX_IMPORT
+#endif
+
+#endif
