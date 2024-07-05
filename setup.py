@@ -19,7 +19,9 @@ class BuildInfo:
         self.type = ""
         self.library_type = "SHARED"
 
-        self.compiler_definitions = []
+        self.c_compiler_definitions = []
+        self.cpp_compiler_definitions = []
+        self.swift_compiler_definitions = []
 
         self.c_sources = []
         self.cpp_sources = []
@@ -110,6 +112,13 @@ def load_project(project_json_path, main_project = False):
             build_info.name = build["name"]
             build_info.prefix = build_info.name.upper().replace("-", "_")
             build_info.type = build["type"]
+            if "compiler-definitions" in build:
+                for definition in build["compiler-definitions"]:
+                    if not allowed(definition): continue
+                    
+                    build_info.c_compiler_definitions.append(definition["define"])
+                    build_info.cpp_compiler_definitions.append(definition["define"])
+                    build_info.swift_compiler_definitions.append(definition["define"])
             if "library-type" in build:
                 build_info.library_type = build["library-type"].upper()
             for source in build["sources"]:
@@ -404,7 +413,7 @@ if(PARADOX_BUILD_LIB)
         add_library({build_info.name}-c {build_info.library_type} ${{{build_info.prefix}_C_SRC}})
         set_target_properties({build_info.name}-c PROPERTIES OUTPUT_NAME "{build_info.name}")
         target_compile_options({build_info.name}-c PRIVATE ${{PARADOX_${{PARADOX_BUILD_LANG}}_COMPILE_FLAGS}})
-        target_compile_definitions({build_info.name}-c PRIVATE ${{PARADOX_${{PARADOX_BUILD_LANG}}_COMPILE_DEFINITIONS}} {build_info.prefix}_BUILD_DLL)
+        target_compile_definitions({build_info.name}-c PRIVATE ${{PARADOX_${{PARADOX_BUILD_LANG}}_COMPILE_DEFINITIONS}} {build_info.prefix}_BUILD_DLL {" ".join(build_info.c_compiler_definitions)})
         target_include_directories({build_info.name}-c PRIVATE {" ".join(build_info.c_includes)})
 
         target_link_directories({build_info.name}-c PRIVATE ${{CMAKE_LIBRARY_OUTPUT_DIRECTORY}} ${{CMAKE_ARCHIVE_OUTPUT_DIRECTORY}})
@@ -420,7 +429,7 @@ if(PARADOX_BUILD_LIB)
         add_library({build_info.name}-cxx {build_info.library_type} ${{{build_info.prefix}_CXX_SRC}})
         set_target_properties({build_info.name}-cxx PROPERTIES OUTPUT_NAME "{build_info.name + ("-framework" if "paradox-library" == build_info.type else "")}")
         target_compile_options({build_info.name}-cxx PRIVATE ${{PARADOX_${{PARADOX_BUILD_LANG}}_COMPILE_FLAGS}})
-        target_compile_definitions({build_info.name}-cxx PRIVATE ${{PARADOX_${{PARADOX_BUILD_LANG}}_COMPILE_DEFINITIONS}} {build_info.prefix}_BUILD_DLL)
+        target_compile_definitions({build_info.name}-cxx PRIVATE ${{PARADOX_${{PARADOX_BUILD_LANG}}_COMPILE_DEFINITIONS}} {build_info.prefix}_BUILD_DLL {" ".join(build_info.cpp_compiler_definitions)})
         target_include_directories({build_info.name}-cxx PRIVATE {" ".join(build_info.cpp_includes)})
 
         target_link_directories({build_info.name}-cxx PRIVATE ${{CMAKE_LIBRARY_OUTPUT_DIRECTORY}} ${{CMAKE_ARCHIVE_OUTPUT_DIRECTORY}})
@@ -437,7 +446,7 @@ if(PARADOX_BUILD_LIB)
         add_executable({build_info.name}-c ${{{build_info.prefix}_C_SRC}})
         set_target_properties({build_info.name}-c PROPERTIES OUTPUT_NAME "{build_info.name}")
         target_compile_options({build_info.name}-c PRIVATE ${{PARADOX_${{PARADOX_BUILD_LANG}}_COMPILE_FLAGS}})
-        target_compile_definitions({build_info.name}-c PRIVATE ${{PARADOX_${{PARADOX_BUILD_LANG}}_COMPILE_DEFINITIONS}} {build_info.prefix}_BUILD_DLL)
+        target_compile_definitions({build_info.name}-c PRIVATE ${{PARADOX_${{PARADOX_BUILD_LANG}}_COMPILE_DEFINITIONS}} {build_info.prefix}_BUILD_DLL {" ".join(build_info.c_compiler_definitions)})
         target_include_directories({build_info.name}-c PRIVATE {" ".join(build_info.c_includes)})
 
         target_link_directories({build_info.name}-c PRIVATE ${{CMAKE_LIBRARY_OUTPUT_DIRECTORY}} ${{CMAKE_ARCHIVE_OUTPUT_DIRECTORY}})
@@ -453,7 +462,7 @@ if(PARADOX_BUILD_LIB)
         add_executable({build_info.name}-cxx ${{{build_info.prefix}_CXX_SRC}})
         set_target_properties({build_info.name}-cxx PROPERTIES OUTPUT_NAME "{build_info.name}")
         target_compile_options({build_info.name}-cxx PRIVATE ${{PARADOX_${{PARADOX_BUILD_LANG}}_COMPILE_FLAGS}})
-        target_compile_definitions({build_info.name}-cxx PRIVATE ${{PARADOX_${{PARADOX_BUILD_LANG}}_COMPILE_DEFINITIONS}} {build_info.prefix}_BUILD_DLL)
+        target_compile_definitions({build_info.name}-cxx PRIVATE ${{PARADOX_${{PARADOX_BUILD_LANG}}_COMPILE_DEFINITIONS}} {build_info.prefix}_BUILD_DLL {" ".join(build_info.cpp_compiler_definitions)})
         target_include_directories({build_info.name}-cxx PRIVATE {" ".join(build_info.cpp_includes)})
 
         target_link_directories({build_info.name}-cxx PRIVATE ${{CMAKE_LIBRARY_OUTPUT_DIRECTORY}} ${{CMAKE_ARCHIVE_OUTPUT_DIRECTORY}})

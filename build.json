@@ -23,6 +23,10 @@
       "name" : "glfw",
       "type" : "library",
       "library-type" : "static",
+      "compiler-definitions" :
+      [
+        { "os" : ["windows"], "define" : "_GLFW_WIN32" }
+      ],
       "sources" : [{ "repo" : "glfw", "directory" : "src" }],
       "includes" : [{ "repo" : "glfw", "directory" : "src" }]
     },
