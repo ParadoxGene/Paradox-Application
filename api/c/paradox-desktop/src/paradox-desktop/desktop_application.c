@@ -35,6 +35,7 @@ PARADOX_DESKTOP_API void paradox_start_desktop_app(const int argc, char* argv[])
     /* Initialize the library */
     app_window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!app_window) goto GLFWTerminate;
+    if(app_window_create_callback) app_window_create_callback();
 
     glfwMakeContextCurrent(app_window);
 
@@ -48,6 +49,7 @@ PARADOX_DESKTOP_API void paradox_start_desktop_app(const int argc, char* argv[])
     // Cleanup
     WindowDestroy:
     glfwDestroyWindow(app_window);
+    if(app_window_close_callback) app_window_close_callback();
 
     GLFWTerminate:
     glfwTerminate();
