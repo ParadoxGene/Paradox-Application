@@ -20,6 +20,13 @@
   "build" :
   [
     {
+      "name" : "glfw",
+      "type" : "library",
+      "library-type" : "static",
+      "sources" : [{ "repo" : "glfw", "directory" : "src" }],
+      "includes" : [{ "repo" : "glfw", "directory" : "src" }]
+    },
+    {
       "name" : "paradox-application",
       "type" : "paradox-library",
       "sources" : [{ "repo" : "paradox-application", "library" : "paradox-application" , "directory" : "paradox-application" }],
@@ -41,7 +48,7 @@
         { "repo" : "paradox-platform", "library" : "paradox-platform" },
         { "repo" : "glfw" , "directory" : "include" }
       ],
-      "libraries" : [ { "name" : "paradox-application" }, { "name" : "paradox-platform" } ]
+      "libraries" : [ { "name" : "paradox-application" }, { "name" : "paradox-platform" }, { "name" : "glfw" }, { "name" : "opengl32" } ]
     }
   ]
 }
