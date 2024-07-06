@@ -17,6 +17,7 @@ PARADOX_DESKTOP_API void (*app_close_callback)() = NULL;
 
 PARADOX_DESKTOP_API void (*app_window_create_callback)() = NULL;
 PARADOX_DESKTOP_API void (*app_window_close_callback)() = NULL;
+PARADOX_DESKTOP_API void (*app_window_render_callback)() = NULL;
 
 PARADOX_DESKTOP_API paradox_str_t* paradox_desktop_app_args()
 {
@@ -107,7 +108,9 @@ PARADOX_DESKTOP_API void paradox_start_desktop_app(const int argc, char* argv[])
     case PARADOX_DESKTOP_VULKAN_API: {
         while (!glfwWindowShouldClose(app_window) && !app_should_close)
         {
-            glClear(GL_COLOR_BUFFER_BIT);
+            if(app_window_render_callback) app_window_render_callback();
+            else glClear(GL_COLOR_BUFFER_BIT);
+
             glfwSwapBuffers(app_window);
             glfwPollEvents();
         }
@@ -253,4 +256,9 @@ PARADOX_DESKTOP_API void paradox_set_window_create_callback(void (*callback)())
 PARADOX_DESKTOP_API void paradox_set_window_closing_callback(void (*callback)())
 {
     app_window_close_callback = callback;
+}
+
+PARADOX_DESKTOP_API void paradox_set_window_render_callback(void (*callback)())
+{
+    app_window_render_callback = callback;
 }

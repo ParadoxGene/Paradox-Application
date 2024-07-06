@@ -52,4 +52,6 @@ PARADOX_DESKTOP_API void paradox_set_desktop_app_closing_callback(void (*callbac
 PARADOX_DESKTOP_API void paradox_set_window_create_callback(void (*callback)());
 PARADOX_DESKTOP_API void paradox_set_window_closing_callback(void (*callback)());
 
+PARADOX_DESKTOP_API void paradox_set_window_render_callback(void (*callback)());
+
 #endif
