@@ -1,6 +1,0 @@
-#ifndef PARADOX_SOFTWARE_C_APPLICATION_APPLICATION_H
-#define PARADOX_SOFTWARE_C_APPLICATION_APPLICATION_H
-
-#include <paradox-application/defines.h>
-
-#endif

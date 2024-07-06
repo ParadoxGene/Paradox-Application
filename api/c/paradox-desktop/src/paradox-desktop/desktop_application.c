@@ -8,6 +8,13 @@ PARADOX_DESKTOP_API paradox_int32_t app_arglen = 0;
 PARADOX_DESKTOP_API paradox_bool8_t app_running = PARADOX_FALSE;
 PARADOX_DESKTOP_API paradox_bool8_t app_should_close = PARADOX_FALSE;
 PARADOX_DESKTOP_API GLFWwindow* app_window = NULL;
+
+PARADOX_DESKTOP_API paradox_desktop_app_api_t windows_app_api = PARADOX_DESKTOP_OPENGL_API;
+PARADOX_DESKTOP_API paradox_desktop_app_api_t linux_app_api = PARADOX_DESKTOP_OPENGL_API;
+
+PARADOX_DESKTOP_API void (*app_create_callback)() = NULL;
+PARADOX_DESKTOP_API void (*app_close_callback)() = NULL;
+
 PARADOX_DESKTOP_API void (*app_window_create_callback)() = NULL;
 PARADOX_DESKTOP_API void (*app_window_close_callback)() = NULL;
 
@@ -20,6 +27,29 @@ PARADOX_DESKTOP_API paradox_int32_t paradox_desktop_app_arglen()
     return app_arglen;
 }
 
+PARADOX_DESKTOP_API void paradox_set_desktop_app_api_mode(paradox_os_t os, paradox_desktop_app_api_t api)
+{
+    switch(os)
+    {
+    case PARADOX_OS_WINDOWS:
+        windows_app_api = api;
+        break;
+
+    case PARADOX_OS_LINUX:
+        linux_app_api = api;
+        break;
+    default: break;
+    }
+}
+PARADOX_DESKTOP_API paradox_desktop_app_api_t paradox_desktop_app_api_mode()
+{
+    #if defined(PARADOX_WINDOWS_BUILD)
+    return windows_app_api;
+    #elif defined(PARADOX_LINUX_BUILD)
+    return linux_app_api;
+    #endif
+}
+
 PARADOX_DESKTOP_API void paradox_start_desktop_app(const int argc, char* argv[])
 {
     if(app_running) return;
@@ -29,12 +59,15 @@ PARADOX_DESKTOP_API void paradox_start_desktop_app(const int argc, char* argv[])
     
     app_should_close = PARADOX_FALSE;
     
+    if(app_create_callback) app_create_callback();
+
     // Initialize Library
     if (!glfwInit()) goto StopRunning;
 
     /* Initialize the library */
     app_window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!app_window) goto GLFWTerminate;
+
     if(app_window_create_callback) app_window_create_callback();
 
     glfwMakeContextCurrent(app_window);
@@ -48,13 +81,14 @@ PARADOX_DESKTOP_API void paradox_start_desktop_app(const int argc, char* argv[])
 
     // Cleanup
     WindowDestroy:
-    glfwDestroyWindow(app_window);
     if(app_window_close_callback) app_window_close_callback();
+    glfwDestroyWindow(app_window);
 
     GLFWTerminate:
     glfwTerminate();
 
     StopRunning:
+    if(app_close_callback) app_close_callback();
     app_running = PARADOX_FALSE;
 
 }
@@ -153,11 +187,20 @@ PARADOX_DESKTOP_API paradox_bool8_t paradox_is_window_restored()
     return !glfwGetWindowAttrib(app_window, GLFW_ICONIFIED) && !glfwGetWindowAttrib(app_window, GLFW_MAXIMIZED);
 }
 
+PARADOX_DESKTOP_API void paradox_set_desktop_app_start_callback(void (*callback)())
+{
+    app_create_callback = callback;
+}
+PARADOX_DESKTOP_API void paradox_set_desktop_app_closing_callback(void (*callback)())
+{
+    app_close_callback = callback;
+}
+
 PARADOX_DESKTOP_API void paradox_set_window_create_callback(void (*callback)())
 {
     app_window_create_callback = callback;
 }
-PARADOX_DESKTOP_API void paradox_set_window_close_callback(void (*callback)())
+PARADOX_DESKTOP_API void paradox_set_window_closing_callback(void (*callback)())
 {
     app_window_close_callback = callback;
 }

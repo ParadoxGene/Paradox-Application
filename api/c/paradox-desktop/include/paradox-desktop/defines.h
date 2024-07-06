@@ -1,7 +1,7 @@
-#ifndef PARADOX_SOFTWARE_C_DESKTOP_DEFINES_H
-#define PARADOX_SOFTWARE_C_DESKTOP_DEFINES_H
+#ifndef PARADOX_SOFTWARE_C_HEADER_DESKTOP_DEFINES
+#define PARADOX_SOFTWARE_C_HEADER_DESKTOP_DEFINES
 
-#include <paradox-application/defines.h>
+#include <paradox-platform/defines.h>
 
 #ifdef PARADOX_DESKTOP_STATIC
     #define PARADOX_DESKTOP_API

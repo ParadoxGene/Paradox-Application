@@ -1,10 +1,20 @@
-#ifndef PARADOX_SOFTWARE_C_DESKTOP_DESKTOP_APPLICATION_H
-#define PARADOX_SOFTWARE_C_DESKTOP_DESKTOP_APPLICATION_H
+#ifndef PARADOX_SOFTWARE_C_HEADER_DESKTOP_APPLICATION
+#define PARADOX_SOFTWARE_C_HEADER_DESKTOP_APPLICATION
 
 #include <paradox-desktop/defines.h>
 
+typedef enum paradox_desktop_app_api_t
+{
+    PARADOX_DESKTOP_OPENGL_API,
+    PARADOX_DESKTOP_VULKAN_API,
+    PARADOX_DESKTOP_DIRECTX_11_API
+} paradox_desktop_app_api_t;
+
 PARADOX_DESKTOP_API paradox_str_t* paradox_desktop_app_args();
 PARADOX_DESKTOP_API paradox_int32_t paradox_desktop_app_arglen();
+
+PARADOX_DESKTOP_API void paradox_set_desktop_app_api_mode(paradox_os_t os, paradox_desktop_app_api_t api);
+PARADOX_DESKTOP_API paradox_desktop_app_api_t paradox_desktop_app_api_mode();
 
 PARADOX_DESKTOP_API void paradox_start_desktop_app(const int argc, char* argv[]);
 PARADOX_DESKTOP_API void paradox_close_desktop_app();
@@ -36,7 +46,10 @@ PARADOX_DESKTOP_API paradox_bool8_t paradox_is_window_minimized();
 PARADOX_DESKTOP_API void paradox_restore_window();
 PARADOX_DESKTOP_API paradox_bool8_t paradox_is_window_restored();
 
+PARADOX_DESKTOP_API void paradox_set_desktop_app_start_callback(void (*callback)());
+PARADOX_DESKTOP_API void paradox_set_desktop_app_closing_callback(void (*callback)());
+
 PARADOX_DESKTOP_API void paradox_set_window_create_callback(void (*callback)());
-PARADOX_DESKTOP_API void paradox_set_window_close_callback(void (*callback)());
+PARADOX_DESKTOP_API void paradox_set_window_closing_callback(void (*callback)());
 
 #endif

@@ -31,28 +31,16 @@
       "includes" : [{ "repo" : "glfw", "directory" : "src" }]
     },
     {
-      "name" : "paradox-application",
-      "type" : "paradox-library",
-      "sources" : [{ "repo" : "paradox-application", "library" : "paradox-application" , "directory" : "paradox-application" }],
-      "includes" :
-      [
-        { "repo" : "paradox-application" , "library" : "paradox-application" },
-        { "repo" : "paradox-platform", "library" : "paradox-platform" }
-      ],
-      "libraries" : [ { "name" : "paradox-platform" } ]
-    },
-    {
       "name" : "paradox-desktop",
       "type" : "paradox-library",
       "sources" : [{ "repo" : "paradox-application", "library" : "paradox-desktop" , "directory" : "paradox-desktop" }],
       "includes" :
       [
         { "repo" : "paradox-application" , "library" : "paradox-desktop" },
-        { "repo" : "paradox-application" , "library" : "paradox-application" },
         { "repo" : "paradox-platform", "library" : "paradox-platform" },
         { "repo" : "glfw" , "directory" : "include" }
       ],
-      "libraries" : [ { "name" : "paradox-application" }, { "name" : "paradox-platform" }, { "name" : "glfw" }, { "name" : "opengl32" } ]
+      "libraries" : [ { "name" : "paradox-platform" }, { "name" : "glfw" }, { "name" : "opengl32" } ]
     }
   ]
 }
