@@ -62,31 +62,81 @@ PARADOX_DESKTOP_API void paradox_start_desktop_app(const int argc, char* argv[])
     if(app_create_callback) app_create_callback();
 
     // Initialize Library
-    if (!glfwInit()) goto StopRunning;
+    switch(paradox_desktop_app_api_mode())
+    {
+    case PARADOX_DESKTOP_OPENGL_API:
+    case PARADOX_DESKTOP_VULKAN_API: {
+        if (!glfwInit()) goto StopRunning;
+        break; }
+    default: break;
+    }
 
-    /* Initialize the library */
-    app_window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!app_window) goto GLFWTerminate;
-
+    // Create the window
+    switch(paradox_desktop_app_api_mode())
+    {
+    case PARADOX_DESKTOP_OPENGL_API: {
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+        glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+        glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
+        app_window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+        if (!app_window) goto APITerminate;
+        break; }
+    default: break;
+    }
+    
     if(app_window_create_callback) app_window_create_callback();
 
-    glfwMakeContextCurrent(app_window);
-
-    while (!glfwWindowShouldClose(app_window) && !app_should_close)
+    // Set the current context
+    switch(paradox_desktop_app_api_mode())
     {
-        glClear(GL_COLOR_BUFFER_BIT);
-        glfwSwapBuffers(app_window);
-        glfwPollEvents();
+    case PARADOX_DESKTOP_OPENGL_API:
+    case PARADOX_DESKTOP_VULKAN_API: {
+        glfwMakeContextCurrent(app_window);
+        break; }
+    default: break;
+    }
+
+    // Window Refresh Loop
+    switch(paradox_desktop_app_api_mode())
+    {
+    case PARADOX_DESKTOP_OPENGL_API:
+    case PARADOX_DESKTOP_VULKAN_API: {
+        while (!glfwWindowShouldClose(app_window) && !app_should_close)
+        {
+            glClear(GL_COLOR_BUFFER_BIT);
+            glfwSwapBuffers(app_window);
+            glfwPollEvents();
+        }
+        break; }
+    default: break;
     }
 
     // Cleanup
     WindowDestroy:
     if(app_window_close_callback) app_window_close_callback();
-    glfwDestroyWindow(app_window);
+    switch(paradox_desktop_app_api_mode())
+    {
+    case PARADOX_DESKTOP_OPENGL_API:
+    case PARADOX_DESKTOP_VULKAN_API: {
+        glfwDestroyWindow(app_window);
+        break; }
+    default: break;
+    }
 
-    GLFWTerminate:
-    glfwTerminate();
-
+    APITerminate:
+    switch(paradox_desktop_app_api_mode())
+    {
+    case PARADOX_DESKTOP_OPENGL_API:
+    case PARADOX_DESKTOP_VULKAN_API: {
+        glfwTerminate();
+        break; }
+    default: break;
+    }
+    
     StopRunning:
     if(app_close_callback) app_close_callback();
     app_running = PARADOX_FALSE;
