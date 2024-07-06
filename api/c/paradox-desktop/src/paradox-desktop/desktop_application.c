@@ -1,6 +1,7 @@
 #include <paradox-desktop/desktop_application.h>
-#include <stdlib.h>
+#include <paradox-application/gl_config.h>
 #include <GLFW/glfw3.h>
+#include <stdlib.h>
 
 PARADOX_DESKTOP_API paradox_str_t* app_args = NULL;
 PARADOX_DESKTOP_API paradox_int32_t app_arglen = 0;
@@ -8,9 +9,6 @@ PARADOX_DESKTOP_API paradox_int32_t app_arglen = 0;
 PARADOX_DESKTOP_API paradox_bool8_t app_running = PARADOX_FALSE;
 PARADOX_DESKTOP_API paradox_bool8_t app_should_close = PARADOX_FALSE;
 PARADOX_DESKTOP_API GLFWwindow* app_window = NULL;
-
-PARADOX_DESKTOP_API paradox_desktop_app_api_t windows_app_api = PARADOX_DESKTOP_OPENGL_API;
-PARADOX_DESKTOP_API paradox_desktop_app_api_t linux_app_api = PARADOX_DESKTOP_OPENGL_API;
 
 PARADOX_DESKTOP_API void (*app_create_callback)() = NULL;
 PARADOX_DESKTOP_API void (*app_close_callback)() = NULL;
@@ -28,29 +26,6 @@ PARADOX_DESKTOP_API paradox_int32_t paradox_desktop_app_arglen()
     return app_arglen;
 }
 
-PARADOX_DESKTOP_API void paradox_set_desktop_app_api_mode(paradox_os_t os, paradox_desktop_app_api_t api)
-{
-    switch(os)
-    {
-    case PARADOX_OS_WINDOWS:
-        windows_app_api = api;
-        break;
-
-    case PARADOX_OS_LINUX:
-        linux_app_api = api;
-        break;
-    default: break;
-    }
-}
-PARADOX_DESKTOP_API paradox_desktop_app_api_t paradox_desktop_app_api_mode()
-{
-    #if defined(PARADOX_WINDOWS_BUILD)
-    return windows_app_api;
-    #elif defined(PARADOX_LINUX_BUILD)
-    return linux_app_api;
-    #endif
-}
-
 PARADOX_DESKTOP_API void paradox_start_desktop_app(const int argc, char* argv[])
 {
     if(app_running) return;
@@ -63,19 +38,19 @@ PARADOX_DESKTOP_API void paradox_start_desktop_app(const int argc, char* argv[])
     if(app_create_callback) app_create_callback();
 
     // Initialize Library
-    switch(paradox_desktop_app_api_mode())
+    switch(paradox_gl_api_mode())
     {
-    case PARADOX_DESKTOP_OPENGL_API:
-    case PARADOX_DESKTOP_VULKAN_API: {
+    case PARADOX_OPENGL_API:
+    case PARADOX_VULKAN_API: {
         if (!glfwInit()) goto StopRunning;
         break; }
     default: break;
     }
 
     // Create the window
-    switch(paradox_desktop_app_api_mode())
+    switch(paradox_gl_api_mode())
     {
-    case PARADOX_DESKTOP_OPENGL_API: {
+    case PARADOX_OPENGL_API: {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE);
@@ -92,20 +67,20 @@ PARADOX_DESKTOP_API void paradox_start_desktop_app(const int argc, char* argv[])
     if(app_window_create_callback) app_window_create_callback();
 
     // Set the current context
-    switch(paradox_desktop_app_api_mode())
+    switch(paradox_gl_api_mode())
     {
-    case PARADOX_DESKTOP_OPENGL_API:
-    case PARADOX_DESKTOP_VULKAN_API: {
+    case PARADOX_OPENGL_API:
+    case PARADOX_VULKAN_API: {
         glfwMakeContextCurrent(app_window);
         break; }
     default: break;
     }
 
     // Window Refresh Loop
-    switch(paradox_desktop_app_api_mode())
+    switch(paradox_gl_api_mode())
     {
-    case PARADOX_DESKTOP_OPENGL_API:
-    case PARADOX_DESKTOP_VULKAN_API: {
+    case PARADOX_OPENGL_API:
+    case PARADOX_VULKAN_API: {
         while (!glfwWindowShouldClose(app_window) && !app_should_close)
         {
             if(app_window_render_callback) app_window_render_callback();
@@ -121,20 +96,20 @@ PARADOX_DESKTOP_API void paradox_start_desktop_app(const int argc, char* argv[])
     // Cleanup
     WindowDestroy:
     if(app_window_close_callback) app_window_close_callback();
-    switch(paradox_desktop_app_api_mode())
+    switch(paradox_gl_api_mode())
     {
-    case PARADOX_DESKTOP_OPENGL_API:
-    case PARADOX_DESKTOP_VULKAN_API: {
+    case PARADOX_OPENGL_API:
+    case PARADOX_VULKAN_API: {
         glfwDestroyWindow(app_window);
         break; }
     default: break;
     }
 
     APITerminate:
-    switch(paradox_desktop_app_api_mode())
+    switch(paradox_gl_api_mode())
     {
-    case PARADOX_DESKTOP_OPENGL_API:
-    case PARADOX_DESKTOP_VULKAN_API: {
+    case PARADOX_OPENGL_API:
+    case PARADOX_VULKAN_API: {
         glfwTerminate();
         break; }
     default: break;
