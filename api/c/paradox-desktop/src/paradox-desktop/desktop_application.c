@@ -63,8 +63,6 @@ PARADOX_DESKTOP_API void paradox_start_desktop_app(const int argc, char* argv[])
         break; }
     default: break;
     }
-    
-    if(app_window_create_callback) app_window_create_callback();
 
     // Set the current context
     switch(paradox_gl_api_mode())
@@ -75,6 +73,8 @@ PARADOX_DESKTOP_API void paradox_start_desktop_app(const int argc, char* argv[])
         break; }
     default: break;
     }
+
+    if(app_window_create_callback) app_window_create_callback();
 
     // Window Refresh Loop
     switch(paradox_gl_api_mode())
